@@ -35,6 +35,21 @@
             "modal": true
         }
     },
+    "service": {
+        "builder": true,
+        "name": "Service Section",
+        "content": {
+            "heading": "text",
+            "sub_heading": "text"
+        },
+        "element": {
+            "icon": "icon",
+            "title": "text",
+            "content": "textarea",
+            "url": "text",
+            "modal": true
+        }
+    },
     "about_social": {
         "builder": true,
         "name": "About Social Section",

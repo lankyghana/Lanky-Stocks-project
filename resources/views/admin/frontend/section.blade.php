@@ -257,6 +257,14 @@
                                             <input type="text" class="form-control" name="{{ $k }}">
                                         </div>
                                     @endif
+                                    
+                                    @if($key == 'service' && $k == 'content')
+                                        <div class="form-group">
+                                            <label>{{ __('URL for Button') }}</label>
+                                            <input type="text" class="form-control" name="url" placeholder="https://example.com/service-page">
+                                            <small class="text-muted">Leave empty to use default service details page.</small>
+                                        </div>
+                                    @endif
                                 @endif
                             @endforeach
                         </div>
@@ -327,6 +335,14 @@
                                         <div class="form-group">
                                             <label>{{ keyToTitle($k) }}</label>
                                             <input type="text" class="form-control" name="{{ $k }}">
+                                        </div>
+                                    @endif
+                                    
+                                    @if($key == 'service' && $k == 'content')
+                                        <div class="form-group">
+                                            <label>{{ __('URL for Button') }}</label>
+                                            <input type="text" class="form-control" name="url" placeholder="https://example.com/service-page">
+                                            <small class="text-muted">Leave empty to use default service details page.</small>
                                         </div>
                                     @endif
                                 @endif
@@ -416,6 +432,12 @@
                 $.each(obj, function(index, value) {
                     modal.find('[name=' + index + ']').val(value);
                 });
+                
+                // Special handling for URL field in service section
+                if ('{{ $key }}' === 'service' && obj.url) {
+                    modal.find('[name=url]').val(obj.url);
+                }
+                
                 modal.modal('show');
             });
 

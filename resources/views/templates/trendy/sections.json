@@ -90,6 +90,7 @@
             },
             "title": "text",
             "content": "textarea",
+            "url": "text",
             "modal": true
         }
     },

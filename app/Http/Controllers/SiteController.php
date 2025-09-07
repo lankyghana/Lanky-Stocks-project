@@ -217,6 +217,23 @@ class SiteController extends Controller {
         $maintenance = Frontend::where('data_keys', 'maintenance.data')->first();
         return view('Template::maintenance', compact('pageTitle', 'maintenance'));
     }
+    
+    public function serviceDetails($id, $slug = null) {
+        $service = Frontend::where('id', $id)->where('data_keys', 'service.element')->firstOrFail();
+        $pageTitle = $service->data_values->title;
+        
+        // Get all services for the sidebar
+        $allServices = Frontend::where('data_keys', 'service.element')->get();
+        
+        // Get related services (excluding the current one)
+        $relatedServices = Frontend::where('data_keys', 'service.element')
+            ->where('id', '!=', $service->id)
+            ->inRandomOrder()
+            ->limit(3)
+            ->get();
+            
+        return view('Template::service_details', compact('pageTitle', 'service', 'allServices', 'relatedServices'));
+    }
 
     public function webmail() {
         $pageTitle = 'Webmail Access';

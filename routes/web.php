@@ -36,6 +36,7 @@ Route::middleware([SetXFrameOptionsHeader::class])->group(function () {
         Route::get('/cookie/accept', 'cookieAccept')->name('cookie.accept');
         Route::get('blog/{slug}', 'blogDetails')->name('blog.details');
         Route::get('services', 'services')->name('services');
+        Route::get('service/{id}/{slug?}', 'serviceDetails')->name('service.details');
         Route::get('placeholder-image/{size}', 'placeholderImage')->withoutMiddleware('maintenance')->name('placeholder.image');
         Route::get('maintenance-mode','maintenance')->withoutMiddleware('maintenance')->name('maintenance');
         Route::post('subscribe', 'subscribe')->name('subscribe');
