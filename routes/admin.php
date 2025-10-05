@@ -26,7 +26,7 @@ Route::namespace('Auth')->group(function () {
 });
 
 Route::middleware('admin')->group(function () {
-    Route::controller('AdminController')->group(function () {
+    Route::controller(\App\Http\Controllers\Admin\AdminController::class)->group(function () {
         Route::get('dashboard', 'dashboard')->name('dashboard');
         Route::get('chart/deposit-withdraw', 'depositAndWithdrawReport')->name('chart.deposit.withdraw');
         Route::get('chart/transaction', 'transactionReport')->name('chart.transaction');
@@ -221,15 +221,31 @@ Route::middleware('admin')->group(function () {
         Route::post('status/{id}', 'status')->name('status');
     });
 
+    // Admin Management
+    Route::controller(\App\Http\Controllers\Admin\AdminManagementController::class)
+        ->name('admins.')
+        ->prefix('admins')
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('create', 'create')->name('create');
+            Route::post('store', 'store')->name('store');
+            Route::get('edit/{id}', 'edit')->name('edit');
+            Route::post('update/{id}', 'update')->name('update');
+            Route::post('status/{id}', 'status')->name('status');
+            Route::get('permissions/{id}', 'permissions')->name('permissions');
+            Route::post('permissions/{id}', 'updatePermissions')->name('permissions.update');
+    });
+
     //Services
     Route::controller('ServiceController')->name('service.')->prefix('service')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('add', 'add')->name('add');
+        Route::get('details/{id}', 'details')->name('details');
         Route::get('edit/{id}', 'edit')->name('edit');
         Route::post('store', 'store')->name('store');
         Route::post('service/store', 'apiServicesStore')->name('api.store');
-    Route::get('sync-prices', 'syncPrices')->name('sync.prices');
-    Route::delete('{id}', 'destroy')->name('delete');
+        Route::get('sync-prices', 'syncPrices')->name('sync.prices');
+        Route::post('delete/{id}', 'destroy')->name('delete');
         Route::post('add', 'addService')->name('add');
         Route::post('status/{id}', 'status')->name('status');
         Route::get('api-services/{id}', 'apiServices')->name('api');

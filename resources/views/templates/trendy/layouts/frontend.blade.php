@@ -24,9 +24,6 @@
         href="{{ asset($activeTemplateTrue . 'css/color.php') }}?color={{ gs('base_color') }}&secondColor={{ gs('secondary_color') }}"
         rel="stylesheet">
 
-    <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7048530393932855"
-         crossorigin="anonymous"></script>
 </head>
 
 @php echo loadExtension('google-analytics') @endphp
@@ -47,17 +44,17 @@
 
     @if (!(request()->routeIs('user.register') || request()->routeIs('user.login')))
         @include('Template::partials.header')
-    @endif
-
-    <!-- Google AdSense Display Ad -->
-    @if (!(request()->routeIs('user.register') || request()->routeIs('user.login')))
+        
+        <!-- Header Google AdSense -->
         <div class="container-fluid my-3">
             <div class="text-center">
-                <!-- Auto ads 25 -->
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7048530393932855"
+                     crossorigin="anonymous"></script>
+                <!-- Vertical ads -->
                 <ins class="adsbygoogle"
                      style="display:block"
                      data-ad-client="ca-pub-7048530393932855"
-                     data-ad-slot="5585309021"
+                     data-ad-slot="7513335225"
                      data-ad-format="auto"
                      data-full-width-responsive="true"></ins>
                 <script>
@@ -66,11 +63,26 @@
             </div>
         </div>
     @endif
-    <!-- End Google AdSense Display Ad -->
 
     @yield('content')
 
     @if (!(request()->routeIs('user.register') || request()->routeIs('user.login')))
+        <!-- Footer Google AdSense -->
+        <div class="container-fluid my-3">
+            <div class="text-center">
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7048530393932855"
+                     crossorigin="anonymous"></script>
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-format="autorelaxed"
+                     data-ad-client="ca-pub-7048530393932855"
+                     data-ad-slot="5318416723"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+        </div>
+        
         @include('Template::partials.footer')
     @endif
     @php

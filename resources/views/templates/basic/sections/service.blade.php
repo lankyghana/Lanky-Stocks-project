@@ -2,6 +2,31 @@
     $serviceContent = getContent('service.content', true);
     $serviceElements = getContent('service.element', null, false, true);
 @endphp
+
+<style>
+    @media (max-width: 767px) {
+        .service-item {
+            height: 450px !important;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .service-item {
+            height: 500px !important;
+        }
+    }
+    
+    .service-item:hover {
+        transform: translateY(-5px);
+        transition: transform 0.3s ease;
+        box-shadow: 0 10px 25px rgba(110, 65, 255, 0.2) !important;
+    }
+    
+    .cmn-btn:hover {
+        background-color: #5930e5 !important;
+        transition: background-color 0.3s ease;
+    }
+</style>
 <!-- service-section start -->
 <section class="service-section ptb-80" id="service">
     <div class="container">
@@ -34,16 +59,19 @@
 
             @forelse($serviceElements as $item)
                 <div class="col-lg-4 col-md-6 col-sm-8 mrb-30">
-                    <div class="service-item text-center">
+                    <div class="service-item text-center" style="position: relative; height: 400px; display: flex; flex-direction: column; margin-bottom: 20px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 10px; padding: 15px;">
                         <div class="service-shape">
                             <img src="{{ asset($activeTemplateTrue . 'images/shape-3.png') }}" alt="@lang('shape')">
                         </div>
                         <div class="service-icon">
                             @php echo @$item->data_values->icon @endphp
                         </div>
-                        <div class="service-content">
+                        <div class="service-content" style="flex-grow: 1; display: flex; flex-direction: column;">
                             <h3 class="title">{{ __(@$item->data_values->title) }}</h3>
                             <p>{{ __(@$item->data_values->content) }}</p>
+                            <div class="text-center" style="margin-top: auto; padding-bottom: 20px; width: 100%;">
+                                <a href="{{ @$item->data_values->url ? $item->data_values->url : route('service.details', ['id' => @$item->id, 'slug' => slug(@$item->data_values->title)]) }}" class="cmn-btn" style="display: inline-block; padding: 10px 25px; min-height: 44px; background-color: #6e41ff; color: white; border-radius: 5px; text-decoration: none; font-weight: bold; margin: 0 auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90%; box-sizing: border-box;">Learn More</a>
+                            </div>
                         </div>
                     </div>
                 </div>

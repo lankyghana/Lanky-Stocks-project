@@ -13,12 +13,18 @@ class AdminManagementController extends Controller
 {
     public function index()
     {
-        $pageTitle = "Manage Admins";
-        $admins = Admin::where('id', '!=', auth()->guard('admin')->id())
-                      ->orderBy('created_at', 'desc')
-                      ->paginate(getPaginate());
-        
-        return view('admin.admins.index', compact('pageTitle', 'admins'));
+        try {
+            $pageTitle = "Manage Admins";
+            $admins = Admin::where('id', '!=', auth()->guard('admin')->id())
+                          ->orderBy('created_at', 'desc')
+                          ->paginate(getPaginate());
+            
+            return view('admin.admins.index', compact('pageTitle', 'admins'));
+        } catch (\Exception $e) {
+            \Log::error('Admin index error: ' . $e->getMessage());
+            $notify[] = ['error', 'Something went wrong. Please try again.'];
+            return back()->withNotify($notify);
+        }
     }
 
     public function create()
@@ -32,42 +38,42 @@ class AdminManagementController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:admins,username',
-            'email' => 'required|string|email|max:255|unique:admins,email',
-            'password' => 'required|string|min:6|confirmed',
-            'role' => 'required|in:super_admin,admin,manager,viewer',
-            'permissions' => 'nullable|array',
-            'permissions.*' => 'string',
-            'status' => 'nullable|in:1,0'
-        ]);
-
-        $admin = new Admin();
-        $admin->name = $request->name;
-        $admin->username = $request->username;
-        $admin->email = $request->email;
-        $admin->password = Hash::make($request->password);
-        $admin->role = $request->role;
-        
-        // Only set these fields if columns exist
         try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'username' => 'required|string|max:255|unique:admins,username',
+                'email' => 'required|string|email|max:255|unique:admins,email',
+                'password' => 'required|string|min:6|confirmed',
+                'role' => 'required|in:super_admin,admin,manager,viewer'
+            ]);
+
+            $admin = new Admin();
+            $admin->name = $request->name;
+            $admin->username = $request->username;
+            $admin->email = $request->email;
+            $admin->password = Hash::make($request->password);
+            $admin->role = $request->role;
+            
+            // Check if permissions column exists and handle permissions
             if (Schema::hasColumn('admins', 'permissions')) {
                 $admin->permissions = $request->permissions ?? [];
             }
-        } catch (Exception $e) {
-            // Permissions column doesn't exist, skip
-        }
-        
-        try {
+            
+            // Check if status column exists and handle status
             if (Schema::hasColumn('admins', 'status')) {
                 $admin->status = $request->has('status') ? 1 : 0;
             }
-        } catch (Exception $e) {
-            // Status column doesn't exist, skip
+            
+            $admin->save();
+
+            $notify[] = ['success', 'Admin created successfully'];
+            return redirect()->route('admin.admins.index')->withNotify($notify);
+            
+        } catch (\Exception $e) {
+            \Log::error('Admin creation error: ' . $e->getMessage());
+            $notify[] = ['error', 'Something went wrong. Please try again.'];
+            return back()->withNotify($notify)->withInput();
         }
-        
-        $admin->save();
 
         $notify[] = ['success', 'Admin created successfully'];
         return redirect()->route('admin.admins.index')->withNotify($notify);
