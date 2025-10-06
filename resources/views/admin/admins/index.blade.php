@@ -12,9 +12,11 @@ use Illuminate\Support\Facades\Schema;
                     <h5 class="card-title mb-0">
                         <i class="las la-users-cog"></i> @lang('Manage Admins')
                     </h5>
-                    <a href="{{ route('admin.admins.create') }}" class="btn btn-sm btn-primary">
-                        <i class="las la-plus"></i> @lang('Add New Admin')
-                    </a>
+                    @if(auth('admin')->user()->hasPermission('admins.create'))
+                        <a href="{{ route('admin.admins.create') }}" class="btn btn-sm btn-primary">
+                            <i class="las la-plus"></i> @lang('Add New Admin')
+                        </a>
+                    @endif
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive--lg table-responsive">
@@ -98,13 +100,15 @@ use Illuminate\Support\Facades\Schema;
                                                     <i class="las la-ellipsis-v"></i> @lang('Action')
                                                 </button>
                                                 <ul class="dropdown-menu">
-                                                    <li>
-                                                        <a class="dropdown-item" href="{{ route('admin.admins.edit', $admin->id) }}">
-                                                            <i class="las la-edit"></i> @lang('Edit')
-                                                        </a>
-                                                    </li>
+                                                    @if(auth('admin')->user()->hasPermission('admins.edit'))
+                                                        <li>
+                                                            <a class="dropdown-item" href="{{ route('admin.admins.edit', $admin->id) }}">
+                                                                <i class="las la-edit"></i> @lang('Edit')
+                                                            </a>
+                                                        </li>
+                                                    @endif
                                                     @if($admin->role !== 'super_admin')
-                                                        @if(Schema::hasColumn('admins', 'status'))
+                                                        @if(Schema::hasColumn('admins', 'status') && auth('admin')->user()->hasPermission('admins.manage'))
                                                             <li>
                                                                 <button class="dropdown-item confirmationBtn" 
                                                                         data-action="{{ route('admin.admins.status', $admin->id) }}"
@@ -114,13 +118,15 @@ use Illuminate\Support\Facades\Schema;
                                                                 </button>
                                                             </li>
                                                         @endif
-                                                        <li>
-                                                            <button class="dropdown-item confirmationBtn text-danger" 
-                                                                    data-action="{{ route('admin.admins.destroy', $admin->id) }}"
-                                                                    data-question="@lang('Are you sure to delete this admin?')">
-                                                                <i class="las la-trash"></i> @lang('Delete')
-                                                            </button>
-                                                        </li>
+                                                        @if(auth('admin')->user()->hasPermission('admins.delete'))
+                                                            <li>
+                                                                <button class="dropdown-item confirmationBtn text-danger" 
+                                                                        data-action="{{ route('admin.admins.destroy', $admin->id) }}"
+                                                                        data-question="@lang('Are you sure to delete this admin?')">
+                                                                    <i class="las la-trash"></i> @lang('Delete')
+                                                                </button>
+                                                            </li>
+                                                        @endif
                                                     @endif
                                                 </ul>
                                             </div>
@@ -156,7 +162,7 @@ use Illuminate\Support\Facades\Schema;
                 </div>
                 <form action="" method="POST">
                     @csrf
-                    @method('DELETE')
+                    {{-- method spoofing will be set dynamically by script --}}
                     <div class="modal-body">
                         <p class="question"></p>
                     </div>
@@ -180,7 +186,14 @@ use Illuminate\Support\Facades\Schema;
                 var action = $(this).data('action');
                 var question = $(this).data('question');
                 modal.find('.question').text(question);
-                modal.find('form').attr('action', action);
+                var form = modal.find('form');
+                form.attr('action', action);
+                // Reset previous spoofed method
+                form.find('input[name="_method"]').remove();
+                // Use DELETE only for destroy routes; POST for status and others
+                if(action.includes('/destroy/')){
+                    form.append('<input type="hidden" name="_method" value="DELETE">');
+                }
                 modal.modal('show');
             });
         })(jQuery);

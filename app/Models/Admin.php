@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
+use Exception;
 
 class Admin extends Authenticatable
 {
@@ -61,7 +62,8 @@ class Admin extends Authenticatable
 
     public function hasPermission($permission)
     {
-        if ($this->role === 'super_admin') {
+        // Super Admin and Admin have full access
+        if ($this->role === 'super_admin' || $this->role === 'admin') {
             return true;
         }
 
@@ -83,7 +85,8 @@ class Admin extends Authenticatable
 
     public function hasAnyPermission($permissions)
     {
-        if ($this->role === 'super_admin') {
+        // Super Admin and Admin have full access
+        if ($this->role === 'super_admin' || $this->role === 'admin') {
             return true;
         }
 
@@ -132,20 +135,13 @@ class Admin extends Authenticatable
 
     public function hasAllPermissions($permissions)
     {
-        if ($this->role === 'super_admin') {
+        // Super Admin and Admin have full access
+        if ($this->role === 'super_admin' || $this->role === 'admin') {
             return true;
         }
 
         return empty(array_diff($permissions, $this->permissions ?? []));
     }
 
-    public function getPermissionsAttribute($value)
-    {
-        return json_decode($value, true) ?? [];
-    }
-
-    public function setPermissionsAttribute($value)
-    {
-        $this->attributes['permissions'] = json_encode($value);
-    }
+    // Rely on Laravel's JSON casting for permissions; no custom accessor/mutator
 }

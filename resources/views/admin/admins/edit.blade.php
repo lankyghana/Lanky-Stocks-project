@@ -12,9 +12,11 @@ use Illuminate\Support\Facades\Schema;
                     <h5 class="card-title mb-0">
                         <i class="las la-user-edit"></i> @lang('Edit Admin')
                     </h5>
+                    @if(auth('admin')->user()->hasPermission('admins.view'))
                     <a href="{{ route('admin.admins.index') }}" class="btn btn-sm btn-outline--primary">
                         <i class="las la-arrow-left"></i> @lang('Back to List')
                     </a>
+                    @endif
                 </div>
                 <form action="{{ route('admin.admins.update', $admin->id) }}" method="POST">
                     @csrf
@@ -90,7 +92,7 @@ use Illuminate\Support\Facades\Schema;
                             </div>
                         </div>
 
-                        @if($admin->role !== 'super_admin' && Schema::hasColumn('admins', 'permissions'))
+                        @if($admin->role !== 'super_admin' && Schema::hasColumn('admins', 'permissions') && auth('admin')->user()->hasPermission('admins.manage'))
                             <div class="row">
                                 <div class="col-md-12">
                                     <h6 class="mb-3">@lang('Permissions')</h6>
@@ -114,7 +116,7 @@ use Illuminate\Support\Facades\Schema;
                                     </div>
                                 </div>
                             </div>
-                        @endif
+                        
                                             
                                             <div class="col-md-3">
                                                 <h6 class="text-muted">@lang('Service Management')</h6>

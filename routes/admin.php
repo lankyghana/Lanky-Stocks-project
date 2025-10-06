@@ -226,14 +226,44 @@ Route::middleware('admin')->group(function () {
         ->name('admins.')
         ->prefix('admins')
         ->group(function () {
-            Route::get('/', 'index')->name('index');
-            Route::get('create', 'create')->name('create');
-            Route::post('store', 'store')->name('store');
-            Route::get('edit/{id}', 'edit')->name('edit');
-            Route::post('update/{id}', 'update')->name('update');
-            Route::post('status/{id}', 'status')->name('status');
-            Route::get('permissions/{id}', 'permissions')->name('permissions');
-            Route::post('permissions/{id}', 'updatePermissions')->name('permissions.update');
+            // List admins
+            Route::get('/', 'index')
+                ->name('index')
+                ->middleware(\App\Http\Middleware\CheckAdminPermission::class . ':admins.view');
+
+            // Create admin
+            Route::get('create', 'create')
+                ->name('create')
+                ->middleware(\App\Http\Middleware\CheckAdminPermission::class . ':admins.create');
+            Route::post('store', 'store')
+                ->name('store')
+                ->middleware(\App\Http\Middleware\CheckAdminPermission::class . ':admins.create');
+
+            // Edit admin
+            Route::get('edit/{id}', 'edit')
+                ->name('edit')
+                ->middleware(\App\Http\Middleware\CheckAdminPermission::class . ':admins.edit');
+            Route::put('update/{id}', 'update')
+                ->name('update')
+                ->middleware(\App\Http\Middleware\CheckAdminPermission::class . ':admins.edit');
+
+            // Change status (enable/disable)
+            Route::post('status/{id}', 'status')
+                ->name('status')
+                ->middleware(\App\Http\Middleware\CheckAdminPermission::class . ':admins.manage');
+
+            // Delete admin
+            Route::delete('destroy/{id}', 'destroy')
+                ->name('destroy')
+                ->middleware(\App\Http\Middleware\CheckAdminPermission::class . ':admins.delete');
+
+            // Manage permissions UI (if implemented)
+            Route::get('permissions/{id}', 'permissions')
+                ->name('permissions')
+                ->middleware(\App\Http\Middleware\CheckAdminPermission::class . ':admins.manage');
+            Route::post('permissions/{id}', 'updatePermissions')
+                ->name('permissions.update')
+                ->middleware(\App\Http\Middleware\CheckAdminPermission::class . ':admins.manage');
     });
 
     //Services
