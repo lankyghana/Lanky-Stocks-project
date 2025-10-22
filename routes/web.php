@@ -2,11 +2,15 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\SetXFrameOptionsHeader;
+use App\Http\Controllers\ShopController;
 
 Route::middleware([SetXFrameOptionsHeader::class])->group(function () {
     Route::get('/clear', function(){
         \Illuminate\Support\Facades\Artisan::call('optimize:clear');
     });
+    // Public Shop
+    Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
+
 
 
     Route::get('cron', 'CronController@cron')->name('cron');

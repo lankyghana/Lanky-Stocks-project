@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Product;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 use Illuminate\Support\Facades\Storage;
 use HTMLPurifier;
@@ -15,6 +17,12 @@ class ShopController extends Controller
     public function index(Request $request)
     {
         $type = $request->query('type');
+        // Be resilient if migrations haven't run yet
+        if (!Schema::hasTable('products')) {
+            $products = new LengthAwarePaginator([], 0, 12);
+            return view('shop.index', compact('products', 'type'));
+        }
+
         $query = Product::query();
         if ($type && in_array($type, ['digital', 'physical'])) {
             $query->where('type', $type);
@@ -26,6 +34,12 @@ class ShopController extends Controller
     // Admin: List all products
     public function adminIndex()
     {
+        // Be resilient if migrations haven't run yet
+        if (!Schema::hasTable('products')) {
+            $products = new LengthAwarePaginator([], 0, 20);
+            return view('admin.shop.index', compact('products'));
+        }
+
         $products = Product::orderByDesc('id')->paginate(20);
         return view('admin.shop.index', compact('products'));
     }

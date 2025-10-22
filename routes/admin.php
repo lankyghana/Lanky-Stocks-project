@@ -398,6 +398,19 @@ Route::middleware('admin')->group(function () {
         Route::get('system-update/log', 'systemUpdateLog')->name('update.log');
     });
 
+    // Shop/Product Management
+    Route::controller(\App\Http\Controllers\ShopController::class)
+        ->prefix('shop')
+        ->name('shop.')
+        ->group(function () {
+            Route::get('/', 'adminIndex')->name('index');
+            Route::get('create', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+            Route::get('{product}/edit', 'edit')->name('edit');
+            Route::put('{product}', 'update')->name('update');
+            Route::delete('{product}', 'destroy')->name('destroy');
+        });
+
     // SEO
     Route::get('seo', 'FrontendController@seoEdit')->name('seo');
 
